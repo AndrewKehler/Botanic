@@ -1,0 +1,87 @@
+body{
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    max-height: 100vh;
+    font-family: 'Lilita One';
+    color: white;
+    overflow: hidden;
+    background-color:#061d47;
+}
+.background-contain{
+    box-sizing: border-box;
+    /* filter: blur(3px); */
+    position: absolute;
+    top: 0;
+    height: auto;
+    width: 101%;
+    min-width: 1526px;
+    min-height: 100%;
+    z-index: -1000;
+    
+    transform: scale(1, -1) ;
+}
+.st0{
+    fill:url(#SVGID_1_);
+}
+.st1{
+    opacity:0.65;
+    fill:url(#SVGID_2_);
+    stroke: #171592;
+    stroke-width: 2px;
+}
+.st2{
+    fill: rgb(19, 32, 107);
+}
+.st3{
+    fill: url(#SVGID_3_)
+}
+.st5{
+    opacity: 0.65;
+    fill: rgb(30, 98, 110);
+    stroke: #0e4069;
+    stroke-width: 2px;
+}
+
+.st4{
+    fill: url(#SVGID_4_);
+}
+
+.st6{
+    fill: url(#SVGID_6_);
+}
+
+.st7{
+    fill: rgb(37, 102, 163);
+}
+
+.st8{
+    opacity: 0.65;
+    fill: rgb(28, 103, 138);
+    stroke: #0e416b;
+    stroke-width: 2px;
+}
+.st9{
+    fill: url(#SVGID_9_);
+}
+
+.st10{fill:#101c5e;}
+
+.st11{
+    fill: rgb(37, 102, 163);
+}
+.st12{
+    opacity: 0.65;
+    fill: rgb(28, 103, 138);
+    stroke: #155a92;
+    stroke-width: 2px;
+}
+
+.st13{
+    fill: #0f3b6d;
+}
+
+.st14{
+    fill: #102757;
+}
+
