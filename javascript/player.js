@@ -108,7 +108,7 @@
             this.canvasCtx.fillStyle = 'rgba(0, 0, 0, 0)';
             this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-            /constants for the canvas customizations.
+            //constants for the canvas customizations.
             const barWidth = 2;
             const gap = 1;
             const barCount = this.bufferLength / ((barWidth + gap) - gap);
