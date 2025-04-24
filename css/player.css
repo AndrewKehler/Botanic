@@ -9,7 +9,7 @@ The styling for the custom audio player. The CSS is imported inthe player.js fil
     font-family: 'Lilita One', sans-serif;
     color: white;
 }
-//the styling of the custom element itself.
+/*the styling of the custom element itself.*/
 .audio-player{
     min-width: 630px;
     z-index: 0;
@@ -24,7 +24,7 @@ The styling for the custom audio player. The CSS is imported inthe player.js fil
     position: relative;
     flex-direction: column;
 }
-//the curved shape that provides a touch of shading for the bottom of the player.
+/*the curved shape that provides a touch of shading for the bottom of the player.*/
 .shape{
     position: absolute;
     z-index: -1;
@@ -38,7 +38,7 @@ The styling for the custom audio player. The CSS is imported inthe player.js fil
     
     
 }
-//styling for the container that holds the frequency visualizer
+/*styling for the container that holds the frequency visualizer*/
 .canvas-contain{
     display: flex;
     flex-direction: column;
@@ -60,7 +60,7 @@ canvas{
     display: flex;
     width: 100%;
 }
-//the container that holds the volume svg and slider.
+/*the container that holds the volume svg and slider.*/
 .volume-field{
     z-index: 3;
     position: relative;
@@ -74,10 +74,6 @@ canvas{
 .volume-bar{
     display: flex;
     align-items: center;
-    /* width: 50px; */
-    /* min-width: 10px; */
-    /* height: 50px; */
-    /* background-color: antiquewhite; */
     align-self: center;
     margin-right: -120px;
 }
@@ -92,7 +88,7 @@ canvas{
     filter: drop-shadow(-5px 4px teal);
     cursor: pointer;
 }
-//makes the audio slider appear on hover
+/*makes the audio slider appear on hover*/
 .volume-bar:hover .volume-field,
 .volume-field:hover{
     opacity: 1;
