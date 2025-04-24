@@ -1,6 +1,6 @@
 /*
 The styling for the body of the website and the animated SVG background.
-Each SVG shape is classed by st#.
+Each SVG shape is classed by st# where # is their respective number.
 */
 body{
     box-sizing: border-box;
