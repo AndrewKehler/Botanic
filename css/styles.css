@@ -65,6 +65,7 @@ The styles for the container with the album cover, project description, and titl
     align-items: center;
     gap: 30px;
     width: 35%;
+    margin-bottom: 3%;
 }
 .cover{
     width: 80%;
