@@ -74,6 +74,10 @@ canvas{
 .volume-bar{
     display: flex;
     align-items: center;
+    /* width: 50px; */
+    /* min-width: 10px; */
+    /* height: 50px; */
+    /* background-color: antiquewhite; */
     align-self: center;
     margin-right: -120px;
 }
