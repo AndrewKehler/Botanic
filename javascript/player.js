@@ -1,13 +1,14 @@
 {
-    // const sliderEl = document.querySelector("#range")
+    /*
+    General code structure derived from a video by Before Semicolon:
+    Custom Audio Player with Web Component and Web Audio API: https://www.youtube.com/watch?v=rkqqBA6ohc0&t=93s
 
-    // function progressScript() {
-    //     const sliderValue = this.progressBar.value;
-    //     sliderEl.style.background = `linear-gradient(to right, #f50 ${sliderValue}%, #ccc ${sliderValue}%)`;
-    // }
+    Plenty of the code has been modified to suit the needs of the project.
+    */
 
-    
+    //describes the class as an HTML element.
     class AudioPlayer extends HTMLElement{
+        //initial variables
         playing = false;
         currentTime = 0;
         duration = 0;
@@ -16,27 +17,34 @@
         initialized = false; 
         title = 'untitled';
         
-
         constructor(){
+            /*
+            Constructs an HTML element, then attaches all hidden shadow elements through the attachShadow method and render method.
+            Then calls the audioCTX api and initializes the audio so volume can be controlled, and audio files can be heard.
+            Finally attaches various style and audio based events allowing for dynamic audio control, and dynamic styling.
+            */
             super();
-
             this.attachShadow({mode:'open'});
             this.render();
             this.initializeAudio();
             this.attachEvents();
         }
 
+        //attributes of the element that are observed on creation in the index html file.
         static get observedAttributes(){
             return ['src','title','muted','crossorigin','loop','preload', 'points'];
         }
 
+        //describes what happens when an observed attribute has been changed.
        async attributeChangedCallback(name, oldValue, newValue){
+           //when the source is changed, check if playing and pause if it is. Then re-render the audio player.
             if (name === 'src'){
                 if(this.playing){
                     await this.togglePlay();
                 }
                 this.initialized = false;
                 this.render();
+            //if the title is changed, update the title attribute, and title shadow element if exists.
             } else if(name === 'title'){
                 this.title = newValue;
 
@@ -45,6 +53,7 @@
                 }
             }
 
+           //creates an array constant of the attributes and updates any of the remaining observed attributes if they have been changed.
             for (let i = 0; i < this.attributes.length; i++){
                 const attr = this.attributes[i];
 
@@ -52,30 +61,34 @@
                     this.audio.setAttribute(attr.name, attr.value);
                 }
             }
-
+            //of the audio hasnt been initialized yet, do so.
             if (!this.initialized){
                 this.initializeAudio();
             }
             console.log('---', name, oldValue, newValue);
         }
-
+        
+        //initializes the audio by calling the audioCtx API.
         initializeAudio(){
             if (this.initialized) return;
             console.log('-- initializeAudio');
 
             this.initialized = true;
-
+            //connects the element to the audioCtx API
             this.audioCtx = new AudioContext();
 
+            //describes the audio track, and allows for gain and data to be analyzed
             this.track = this.audioCtx.createMediaElementSource(this.audio);
             this.gainNode = this.audioCtx.createGain();
             this.analyzerNode = this.audioCtx.createAnalyser();
 
+            //determines our frequency domain accuracy
             this.analyzerNode.fftSize = 2048;
             this.bufferLength = this.analyzerNode.frequencyBinCount;
             this.dataArray = new Uint8Array(this.bufferLength);
             this.analyzerNode.getByteFrequencyData(this.dataArray);
 
+            //connects the track to the audioCtx elements.
             this.track
                 .connect(this.gainNode)
                 .connect(this.analyzerNode)
@@ -84,22 +97,27 @@
                 this.attachEvents();
         }
 
+        //styles the frequency visualizer when an audio file is playing.
         updateFrequency(){
             if(!this.playing) return;
             
-
             this.analyzerNode.getByteFrequencyData(this.dataArray);
 
+            //describes a canvas for the frewuency visualizer to be displayed.
             this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.canvasCtx.fillStyle = 'rgba(0, 0, 0, 0)';
             this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
+            /constants for the canvas customizations.
             const barWidth = 2;
             const gap = 1;
             const barCount = this.bufferLength / ((barWidth + gap) - gap);
             let x = 0;
             
-
+            /*
+            loops through each frequency values and scales the frequency to fit within 255 so
+            an RGB value can be associate with the frequency strength.
+            */
             for (let i = 0; i < barCount; i++){
                 const perc = (this.dataArray[i] * 100) / 255;
                 const h = (perc * this.canvas.height) / 100;
@@ -117,7 +135,7 @@
                     blue = 98;
                 };
 
-
+                //uses the dynamic RGB values from the loop to style the colours of the frequency visualizer.
                 this.canvasCtx.fillStyle = `rgba(0,${green}, ${blue},  1)`;
                 this.canvasCtx.fillRect(x, this.canvas.height - h, barWidth, h);
                 
@@ -132,23 +150,29 @@
             requestAnimationFrame(this.updateFrequency.bind(this));
         }
                 
-
+        //Describes which events to attach when the method is called.
         attachEvents(){
 
+            //methods to style the sliders when moved
             this.onload = this.levelScript();
             this.onload = this.progressScript();
+
+            //methods to animate the audio and play SVGs on click
             this.playPauseBtn.addEventListener('click', this.togglePlay.bind(this), false);
             this.audioBtn.addEventListener('click', this.clickMute.bind(this), false);
-            
+
+            //attaches the styling methods to the volume and slider bars respectively.
             this.volumeBar.addEventListener('input', this.audioIconAnimate.bind(this), false);
             this.volumeBar.addEventListener('input', this.changeVolume.bind(this), false);
             this.volumeBar.addEventListener('input', this.levelScript.bind(this), false);
             this.progressBar.addEventListener('input', () => {
                 this.seekTo(this.progressBar.value);
-                console.log(this.progressBar.value);
             }, false);
  
-
+            /*
+            initializes and attaches metadata of the audio file so we can access and 
+            update the duration of the piece, and the current timestamp.
+            */
             this.audio.addEventListener('loadedmetadata', () => {
                 this.duration = this.audio.duration;
                 this.progressBar.max = this.duration;
@@ -162,12 +186,13 @@
                 console.log('currentTime', this.audio.currentTime);
             })
 
+            //updates the current time.
             this.audio.addEventListener('timeupdate', () => {
                 this.updateAudioTime(this.audio.currentTime);
             })
-
             this.audio.addEventListener('timeupdate', this.progressScript.bind(this), false);
 
+            //describes what should happen after an audio file compeletes.
             this.audio.addEventListener('ended', () => {
                 this.playing = false;
                 this.canvasContain.style.maxHeight = "0"
@@ -177,31 +202,29 @@
             })
         }
 
+        //Describes what happens when the state of the file switches from stopped and playing.
         async togglePlay(){
             if (this.audioCtx.state === 'suspended'){
                 await this.audioCtx.resume();
             }
-            
+            //Pauses and closes the frequency visualizer canvas
             if (this.playing) {
                 await this.audio.pause();
                 this.playing = false;
-                // this.playPauseBtn.textContent = 'play';
                 this.canvasContain.style.maxHeight = "0"
                 this.canvasContain.style.opacity = "0"
                 this.pauseToPlay();
             }else {
+            //plays and opens frequency visualizer
                 await this.audio.play();
                 this.playing = true;
-                // this.playPauseBtn.textContent = 'pause';
                 this.updateFrequency();
-                
-
                 this.canvasContain.style.maxHeight = "200px"
                 this.canvasContain.style.opacity = "100%"
                 this.playToPause();
             }   
         }
-
+        //describes an SVG animation from a play button to a pause button.
         playToPause(){
             const pausePath1 = `986.74,500 986.74,419.69 986.74,278.54 986.74,8.79 639.97,8.79 639.97,991.21 986.74,991.21 
             986.74,807.85 986.74,675.26 `;
@@ -222,7 +245,7 @@
                     points:[{value: pausePath2}]
                 }, "-= 300");
         }
-
+        //describes an SVG animation from a pause button to a play button.
         pauseToPlay(){
             const playPath1 = `985.89,500 879.85,437.16 770.78,379.41 631.06,313.83 492.94,241.03 492.94,754.94 630.21,687.82 
             770.68,614.88 879.64,555.89 `;  
@@ -243,11 +266,12 @@
                     points:[{value: playPath2}]
                 }, "-= 300");
         }
-
+        
+        //lets us seek through the audio duration.
         seekTo(value) {
             this.audio.currentTime = value;
         }
-        
+        //updates the text that displays the current playback time.
         updateAudioTime(time){
             this.currentTime = time;
             this.progressBar.value = this.currentTime;
@@ -257,13 +281,15 @@
 
             this.currentTimeEl.textContent = `${mins}:${secs}`;
         }
-
+        
+        //lets us adjust the audio volume.
         changeVolume(){
             this.volume = this.volumeBar.value;
             this.gainNode.gain.value = this.volume;
             console.log(this.volume)
         }
 
+        //describes the SVG animation of the audio icon at each stage of audio level. Mute, low, medium, and high volume.
         audioIconAnimate(){
             const audioHigh = [
                 `M236.84,275.62c3.94,0,77.03-0.97,80.24-3.51l232.69-184.2c12.51-9.9,29.9,0,29.9,17.02v792.15 c0,15.71-15.06,25.82-27.65,18.55l-216.8-137.72c-2.7-1.56-26.9-0.85-29.94-0.85`,//body [0]
@@ -338,6 +364,8 @@
                 c7.55-17.19,27.54-24.86,44.8-17.46c34.97,14.99,54.24,29.4,65.38,53.14c17.78,37.86,26.76,46.38,26.76,84.19
                 c0,37.04-13.55,63.38-26.54,85.17c-17.65,29.6-29.13,36.34-65.59,53.69C634.86,640.15,630.16,640.94,625.6,640.94z` //high bar [5]
             ];
+
+            //the animation that uses the above paths only if the volume matches the SVG state.
             this.volume = this.volumeBar.value;
 
             const timeline = anime.timeline({
@@ -451,6 +479,7 @@
             }
         }
 
+        //animates the audio SVG to mute when clicked.
         clickMute(){
             const audioMute = [
                 `M283.2,275.26c3.94,0,30.67-0.61,33.88-3.15l232.69-184.2c12.51-9.9,29.9,0,29.9,17.02v792.15
@@ -488,21 +517,20 @@
                 const sliderValue = this.volumeBar.value;
                 this.volumeBar.style.background = `linear-gradient(to right, #15353D ${sliderValue *50}%, #ffff ${sliderValue *50}%)`;
             }
-            
-            
-            
         }
-
+        
+        //adds a coloured background to the back of the progress bar as it progresses.
         progressScript() {
             const sliderValue = this.progressBar.value;
             const sliderMax = this.progressBar.max;
             this.progressBar.style.background = `linear-gradient(to right, #15353D ${sliderValue/(sliderMax/100)}%, #ffff ${sliderValue/(sliderMax/100)}%)`;
         }
+        //does the same but for the audio slider.
         levelScript() {
             const sliderValue = this.volumeBar.value;
             this.volumeBar.style.background = `linear-gradient(to right, #15353D ${sliderValue *50}%, #ffff ${sliderValue *50}%)`;
         }
-
+        //returns a style sheet so each element is styled by the same css file.
         style(){
             return `
             <link rel="stylesheet" href="css/player.css">
@@ -510,6 +538,7 @@
             `
         }
 
+        //gives the element its HTML markup and inline styling.
         render(){
             this.shadowRoot.innerHTML = `
             ${this.style()}
@@ -562,6 +591,8 @@
                 <div class="shape"></div>               
             </figure>
             `;
+            
+            //all html class selection for styling.
             this.audioBtn = this.shadowRoot.querySelector('#audioIcn');
             this.body1 = this.audioBtn.children[0];
             this.body2 = this.audioBtn.children[1];
