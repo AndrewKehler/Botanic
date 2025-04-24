@@ -1,3 +1,11 @@
+/*
+Describes all the SVG shapes that are animated for the main website background.
+Below are 15 arrays each with 2 describes SCG paths. A basic Anime.js function switches between these paths
+on different intervals.
+
+The object classes are ID'd st#.
+*/
+
 const path1 = [ `M1577.5,0.5c-8.04,58.88-1.78,112.46,29,152c25.12,32.26,44.85,27.3,79,65c52.35,57.79,34.51,100.94,75,135
 c41.3,34.73,114.64,35.93,159,9l1-361H1577.5z`,
 
